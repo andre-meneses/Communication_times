@@ -11,6 +11,7 @@
 
 #define SERVER_PORT 12345
 #define PACKET_SIZES {64, 128, 256, 512, 1024}
+#define SERVER_IP "192.168.X.X"
 
 void send_packets(int sockfd, struct sockaddr_in *servaddr, int packet_size, int num_packets);
 
@@ -28,6 +29,8 @@ int main() {
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(SERVER_PORT);
     servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    /* servaddr.sin_addr.s_addr = inet_addr(SERVER_IP); */
+
 
     int packet_sizes[] = PACKET_SIZES;
     int num_sizes = sizeof(packet_sizes) / sizeof(packet_sizes[0]);
