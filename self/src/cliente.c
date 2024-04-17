@@ -1,4 +1,3 @@
-// cliente.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,9 +10,9 @@
 
 #define SERVER_PORT 12345
 #define PACKET_SIZES {64, 128, 256, 512, 1024}
-#define SERVER_IP "192.168.X.X"
+#define SERVER_IP "127.0.0.0" // Substitua pelo IP real do servidor
 
-void send_packets(int sockfd, struct sockaddr_in *servaddr, int packet_size, int num_packets);
+void send_packets(int sockfd, struct sockaddr_in *servaddr, int packet_size, int num_packets, FILE *fp);
 
 int main() {
     int sockfd;
@@ -28,26 +27,33 @@ int main() {
     memset(&servaddr, 0, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(SERVER_PORT);
-    servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    /* servaddr.sin_addr.s_addr = inet_addr(SERVER_IP); */
+    servaddr.sin_addr.s_addr = inet_addr(SERVER_IP);
 
+    FILE *fp = fopen("data.csv", "w");
+    if (fp == NULL) {
+        perror("Cannot open file");
+        exit(EXIT_FAILURE);
+    }
+
+    // Escreve o cabeçalho do CSV
+    fprintf(fp, "PacketSize (bytes),Time (ns)\n");
 
     int packet_sizes[] = PACKET_SIZES;
     int num_sizes = sizeof(packet_sizes) / sizeof(packet_sizes[0]);
     for (int i = 0; i < num_sizes; i++) {
-        send_packets(sockfd, &servaddr, packet_sizes[i], 30);
+        send_packets(sockfd, &servaddr, packet_sizes[i], 30, fp);
     }
 
+    fclose(fp);
     close(sockfd);
     return 0;
 }
 
-void send_packets(int sockfd, struct sockaddr_in *servaddr, int packet_size, int num_packets) {
+void send_packets(int sockfd, struct sockaddr_in *servaddr, int packet_size, int num_packets, FILE *fp) {
     char packet[packet_size];
     memset(packet, 'A', packet_size);
 
     struct timespec start, end;
-    long long total_time = 0;
 
     for (int i = 0; i < num_packets; i++) {
         clock_gettime(CLOCK_REALTIME, &start);
@@ -59,12 +65,9 @@ void send_packets(int sockfd, struct sockaddr_in *servaddr, int packet_size, int
 
         clock_gettime(CLOCK_REALTIME, &end);
         long long time_ns = (end.tv_sec - start.tv_sec) * 1000000000LL + (end.tv_nsec - start.tv_nsec);
-        total_time += time_ns;
 
-        printf("Packet size: %d bytes, Time taken: %lld ns\n", packet_size, time_ns);
+        // Grava os dados no arquivo CSV
+        fprintf(fp, "%d,%lld\n", packet_size, time_ns);
     }
-
-    long long average_time = total_time / num_packets;
-    printf("Average time for packet size %d bytes: %lld ns\n", packet_size, average_time);
 }
 
