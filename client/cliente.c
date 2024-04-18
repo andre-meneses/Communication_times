@@ -10,7 +10,7 @@
 
 #define SERVER_PORT 12345
 #define PACKET_SIZES {64, 128, 256, 512, 1024}
-#define SERVER_IP "192.168.X.X" // Substitua pelo IP real do servidor
+#define SERVER_IP "192.168.0.78" 
 
 void send_packets(int sockfd, struct sockaddr_in *servaddr, int packet_size, int num_packets, FILE *fp);
 
@@ -29,7 +29,7 @@ int main() {
     servaddr.sin_port = htons(SERVER_PORT);
     servaddr.sin_addr.s_addr = inet_addr(SERVER_IP);
 
-    FILE *fp = fopen("data_esp.csv", "w");
+    FILE *fp = fopen("data_tt.csv", "w");
     if (fp == NULL) {
         perror("Cannot open file");
         exit(EXIT_FAILURE);

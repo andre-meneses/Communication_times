@@ -10,7 +10,7 @@
 
 #define SERVER_PORT 12345
 #define PACKET_SIZES {64, 128, 256, 512, 1024}
-#define SERVER_IP "127.0.0.0" // Substitua pelo IP real do servidor
+#define SERVER_IP "127.0.0.0" 
 
 void send_packets(int sockfd, struct sockaddr_in *servaddr, int packet_size, int num_packets, FILE *fp);
 
@@ -65,6 +65,7 @@ void send_packets(int sockfd, struct sockaddr_in *servaddr, int packet_size, int
 
         clock_gettime(CLOCK_REALTIME, &end);
         long long time_ns = (end.tv_sec - start.tv_sec) * 1000000000LL + (end.tv_nsec - start.tv_nsec);
+        time_ns = time_ns/2;
 
         // Grava os dados no arquivo CSV
         fprintf(fp, "%d,%lld\n", packet_size, time_ns);
