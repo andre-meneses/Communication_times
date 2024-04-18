@@ -68,3 +68,39 @@ plt.tight_layout()
 plt.savefig('tempos_de_processamento_e_comunicacao.png')
 
 plt.show()
+
+def calcular_estatisticas_por_tamanho(df):
+    estatisticas = df.groupby('PacketSize (bytes)')['Tempo'].agg(['mean', 'std']).reset_index()
+    return estatisticas
+
+# Função para gerar gráficos por tamanho de pacote
+def gerar_graficos_por_tamanho(df, titulo):
+    estatisticas = calcular_estatisticas_por_tamanho(df)
+    plt.errorbar(estatisticas['PacketSize'], estatisticas['mean'], yerr=estatisticas['std'], fmt='-o', capsize=5)
+    plt.title(titulo)
+    plt.xlabel('Tamanho do Pacote (bytes)')
+    plt.ylabel('Tempo (s)')
+    plt.grid(True)
+
+# Supõe-se que os dados já estão carregados em tp1_data, tp2_data, e tt_data e que existe uma coluna 'PacketSize'
+
+# Adicionar coluna 'Tempo' a tp1_data, tp2_data e calcular para tc_data
+tp1_data['Tempo'] = tp1_data['Time (ns)']
+tp2_data['Tempo'] = tp2_data['Time (ns)']
+tc_data = pd.DataFrame({'PacketSize': tt_data['PacketSize (bytes)'], 'Tempo': tc_data})
+
+# Gerar os gráficos para Tp1, Tp2 e Tc por tamanho de pacote
+plt.figure(figsize=(14, 10))
+
+plt.subplot(3, 1, 1)
+gerar_graficos_por_tamanho(tp1_data, 'Tempo de Processamento Tp1 por Tamanho de Pacote')
+
+plt.subplot(3, 1, 2)
+gerar_graficos_por_tamanho(tp2_data, 'Tempo de Processamento Tp2 por Tamanho de Pacote')
+
+plt.subplot(3, 1, 3)
+gerar_graficos_por_tamanho(tc_data, 'Tempo de Comunicação Tc por Tamanho de Pacote')
+
+plt.tight_layout()
+plt.savefig('tempos_por_tamanho_de_pacote.png')
+plt.show()
