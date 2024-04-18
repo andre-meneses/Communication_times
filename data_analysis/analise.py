@@ -68,4 +68,3 @@ plt.tight_layout()
 plt.savefig('tempos_de_processamento_e_comunicacao.png')
 
 plt.show()
-aa
